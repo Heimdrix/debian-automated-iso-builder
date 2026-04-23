@@ -1,0 +1,45 @@
+# --- Python ---
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
+
+# --- Virtualenv ---
+.venv/
+venv/
+env/
+
+# --- Environment variables ---
+.env
+.env.*
+!.env.example
+
+# --- Config real ---
+config/default.yml
+
+# --- Cache (datos regenerables) ---
+cache/
+
+# --- Output (ISOs generadas) ---
+output/
+
+# --- Keys (solo permitir clave pública Debian) ---
+keys/*
+!keys/debian/
+!keys/debian/debian-cd-signing-key.asc
+
+# --- Temporary / OS ---
+*.swp
+*.swo
+.DS_Store
+Thumbs.db
+
+# --- IDEs ---
+.vscode/
+.idea/
+
+# --- Testing / debug ---
+*.tmp
+*.bak
+*.old

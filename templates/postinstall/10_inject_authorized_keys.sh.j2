@@ -1,0 +1,25 @@
+#!/bin/sh
+set -eu
+
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+
+USER="{{ user.username }}"
+HOME_DIR="/home/$USER"
+SSH_DIR="$HOME_DIR/.ssh"
+AUTH_KEYS="$SSH_DIR/authorized_keys"
+
+# Crear .ssh con permisos correctos
+install -d -m 700 -o "$USER" -g "$USER" "$SSH_DIR"
+
+# Crear archivo limpio
+: > "$AUTH_KEYS"
+
+for key in "$SCRIPT_DIR"/*.pub; do
+  [ -f "$key" ] || continue
+  cat "$key" >> "$AUTH_KEYS"
+  printf '\n' >> "$AUTH_KEYS"
+done
+
+# Permisos finales
+chown "$USER:$USER" "$AUTH_KEYS"
+chmod 600 "$AUTH_KEYS"

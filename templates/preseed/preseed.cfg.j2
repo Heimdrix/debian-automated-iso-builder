@@ -1,0 +1,89 @@
+d-i apt-setup/disable-cdrom-entries               boolean     true
+d-i apt-setup/enable-source-repositories          boolean     false
+d-i apt-setup/services-select                     multiselect security, updates
+d-i apt-setup/use_mirror                          boolean     true
+
+d-i base-installer/install-recommends             boolean     false
+
+d-i debconf/priority                              select      critical
+
+d-i debian-installer/locale                       string      {{ system.locale }}
+
+d-i grub-installer/skip                           boolean     true
+
+d-i hw-detect/load_firmware                       boolean     false
+
+d-i keyboard-configuration/xkb-keymap             select      {{ system.keymap }}
+
+d-i mirror/https/directory                        string      /debian/
+d-i mirror/https/hostname                         string      deb.debian.org
+d-i mirror/protocol                               string      https
+d-i mirror/suite                                  string      trixie
+
+d-i netcfg/choose_interface                       select      auto
+d-i netcfg/get_hostname                           string      {{ network.hostname }}
+d-i netcfg/get_domain                             string      {{ network.domain }}
+d-i netcfg/use_autoconfig                         boolean     true
+
+d-i partman-auto-crypto/erase_disks               boolean     true
+d-i partman-auto-lvm/guided_size                  string      max
+d-i partman-auto-lvm/new_vg_name                  string      vg0
+d-i partman-auto-lvm/no_boot                      boolean     true
+d-i partman-auto/choose_recipe                    select      {{ recipe }}
+d-i partman-auto/disk                             string      {{ disk.target_device }}
+d-i partman-auto/expert_recipe_file               string      /cdrom/preseed/recipes/{{ recipe }}.cfg
+d-i partman-auto/method                           string      crypto
+d-i partman-auto/purge_lvm_from_device            boolean     true
+d-i partman-auto/purge_partition_table            boolean     true
+
+d-i partman-basicfilesystems/no_swap              boolean     false
+
+d-i partman-basicmethods/method_only              boolean     false
+
+d-i partman-crypto/confirm                        boolean     true
+d-i partman-crypto/passphrase                     string      {{ disk.luks_passphrase }}
+d-i partman-crypto/passphrase-again               string      {{ disk.luks_passphrase }}
+
+d-i partman-efi/non_efi_system                    boolean     false
+
+d-i partman-lvm/confirm                           boolean     true
+d-i partman-lvm/confirm_nooverwrite               boolean     true
+d-i partman-lvm/device_remove_lvm                 boolean     true
+
+d-i partman-md/device_remove_md                   boolean     true
+
+d-i partman-partitioning/choose_label             select      gpt
+d-i partman-partitioning/confirm_write_new_label  boolean     true
+d-i partman-partitioning/default_label            string      gpt
+
+d-i partman/choose_partition                      select      finish
+d-i partman/confirm                               boolean     true
+d-i partman/confirm_nooverwrite                   boolean     true
+d-i partman/early_command                         string      dd if=/dev/zero of={{ disk.target_device }} bs=1M count=20
+
+d-i passwd/root-login                             boolean     false
+d-i passwd/user-fullname                          string      Local Administrator
+d-i passwd/username                               string      {{ user.username }}
+d-i passwd/user-password-crypted                  password    {{ user.password_hash }}
+
+{% if packages.exclude %}
+d-i pkgsel/exclude                                string      {{ packages.exclude | join(" ") }}
+{% endif %}
+{% if packages.include %}
+d-i pkgsel/include                                string      {{ packages.include | join(" ") }}
+{% endif %}
+
+d-i pkgsel/run_tasksel                            boolean     false
+d-i pkgsel/update-policy                          select      unattended-upgrades
+
+d-i systemd-boot-installer/skip                   boolean     false
+
+d-i time/zone                                     select      {{ system.timezone }}
+
+d-i preseed/late_command string \
+    lvremove -y /dev/vg0/reserved || true; \
+    mkdir -p /target/tmp/preseed; \
+    cp -a /cdrom/preseed/postinstall/. /target/tmp/preseed/; \
+    chmod 700 /target/tmp/preseed/post_install.sh; \
+    in-target /bin/sh /tmp/preseed/post_install.sh; \
+    rm -rf /target/tmp/preseed

@@ -1,0 +1,12 @@
+[project]
+name = "custom-debian-iso-generator"
+version = "0.1.0"
+description = "Custom Debian ISO Generator for Automated Deployment"
+requires-python = ">=3.11"
+
+dependencies = [
+    "pyyaml",
+    "python-dotenv",
+    "jinja2",
+    "pydantic",
+]

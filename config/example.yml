@@ -1,0 +1,32 @@
+disk:
+  luks_passphrase: "${LUKS_PASSPHRASE}"
+  target_device: /dev/sdX
+
+iso:
+  arch: "amd64"
+  version: "13.0.0"
+
+network:
+  domain: example.local
+  hostname: server-host
+
+openssh:
+  public_key_path: "/absolute/path/to/id_ed25519.pub"
+
+packages:
+  exclude:
+    - cron
+  include:
+    - openssh-server
+
+preseed:
+  recipe_path: "/absolute/path/to/recipes/server.cfg"
+
+system:
+  keymap: us
+  locale: en_US.UTF-8
+  timezone: UTC
+
+user:
+  password_hash: "${USER_PASSWORD_HASH}"
+  username: server
