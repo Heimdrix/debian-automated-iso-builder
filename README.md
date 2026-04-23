@@ -147,6 +147,4 @@ Always test in a virtual machine before using on real hardware.
 * Designed for reproducibility and offline usage
 * Keys are stored locally and not fetched at runtime
 
-```
-
 ---
