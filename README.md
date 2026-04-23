@@ -4,7 +4,7 @@ This project provides a Python-based pipeline to generate customized Debian ISO 
 
 It uses Jinja templating and a modular architecture to dynamically build installation media with reproducible and secure configurations.
 
-The primary use case is automated deployment (PXE-ready), but ISO-based workflows are fully supported.
+The primary use case is ISO-based automated deployment. PXE workflows are supported but require manual kernel/initrd extraction.
 
 ---
 
@@ -17,7 +17,7 @@ The primary use case is automated deployment (PXE-ready), but ISO-based workflow
 - Structured partitioning with LUKS + LVM  
 - Automatic SSH key injection  
 - Preseed-based unattended installation  
-- PXE-ready deployment  
+- PXE-compatible deployment (manual setup required)  
 - Debian 13 (Trixie) support (extendable)  
 - UEFI-only  
 
@@ -109,6 +109,31 @@ The pipeline executes the following steps:
 5. Generate post-install scripts
 6. Extract ISO and inject configuration
 7. Rebuild final ISO image
+
+---
+
+## PXE Usage (Optional)
+
+To use the generated ISO in a PXE environment:
+
+1. Extract kernel and initrd from the ISO:
+
+   ```bash
+   xorriso -osirrox on -indev custom.iso -extract / iso-root/
+   ```
+
+2. Use:
+
+   ```text
+   iso-root/install.amd/vmlinuz
+   iso-root/install.amd/initrd.gz
+   ```
+
+3. Serve preseed over HTTP and configure boot parameters:
+
+   ```text
+   auto=true priority=critical preseed/url=http://server/preseed.cfg
+   ```
 
 ---
 
